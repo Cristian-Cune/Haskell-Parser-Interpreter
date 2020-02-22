@@ -1,0 +1,61 @@
+===========README TEMA 1 PP =============
+
+CUNE CRISTIAN 321CB
+
+a.
+
+-ClassState-ul este reprezentat de un Map ce are drept chei unice atributele variabilelor si functiilor si drept valori, un InstrType.
+
+-Functia initEmptyClass initializeaza un map nou folosind Mao.empty si formeaza un classstate nou.
+
+-Functia insertIntoClass foloseste functia Map.insert pentru a insera in map-ul din interiorul classstate-ului primit ca parametru (obtinut folosind class_map). Se formeaza un nou classstate din map-ul obtinut.
+
+-In functia getValues se formeaza un nou map ce contine doar elementele ce su valoarea egala cu InstrType-ul cerut folosind filterWithKey.Din acest map se obine lista echivalenta folosind toList. Pe aceasta lista se aplica first pe fiecare element si se obtine astfel o lista cu atributele functiilor/variabilelor din classstate-ul dorit.
+
+b.
+Avem tipul ClassInfo ce are campurile : className (numele clasei), un ClassState in care se salveaza variabilele si functiile, si parent ce reprezinta numele clasei parinte.
+Un program va fi reprezentat printr-o lista de elemente de tip ClassInfo ce va tine toate clasele si un alt element de tip ClassInfo ce reprezinta clasa Global.
+O instructiune ca fi un string, mai exact o linie din fisierul din care citim.
+
+-Functia initEmptyProgram va contrui un program astfel: Lista e clase va fi lista vida si clasa va avea numele "Global" , un classstate gol si numele parintelui care este tot "Global".
+
+-Functia getVars va apela getValues pe classstate-ul clasei global cu InstrType-ul Var.
+
+-Functia getClasses va obtine numele fiecarei clase din lista de clase a programului folosind map si va lega la aceasta lista rezultata numele clasei gobal ("Global").
+
+-Functia getSearchedClass va obtine din program o clasa al carui nume este dat ca parametru.Daca clasa cautata este gobal atunci se returneaza global, altfel se va folosi filter pentru a obtine toate clasele ce au numele identic  cu cel primit ca parametru. Din moment ce doar o clasa ca avea acelasi nume, aplicam head pe lista intoarsa de filter.
+
+-Functia getParentClass va obtine numele clasei parinte din clasa intoarsa de getSearchedClass, apelata pentru name si prog (parametrii intiali).
+
+-Functia getFuncsForClass va apela getValus pentru classstate-ul din clasa cautata (obinuta folosind getSearchedClass) si pentru Func, in caz ca functia ceruta este valida (daca isClass este True) si lista vida in caz ca nu este valida 
+
+-Functia splitBy va lua ca input un caracter si un string si va imparti string ul dupa acel caracter.Daca string ul este gol vom avea lista vida. res va fi o pereche ce va contine toate caracterele pana cand intalnim caracterul cautat, respectiv toate caracterele de dupa cel cautat si este obtinut folosind span.Daca primul caracter este cel dupa care se face split (c) atunci fst de res va fi gol (aceasta trateaza cazul cand sunt mai multi de c consecutivi), in acest caz vom aplica splitBy pe ce a ramas (snd res) dar vom sterge primul element folosind drop deoarece el este exact c. In caz contrar se va concatena lista formata din ce am obtinut la inceput (fst res) cu lista formata din apelul recursiv de splitBy pe restul string-ului.
+
+-Functia parse va face splitBy '\n' pe stringul primit.Va separa dupa linii si fiecare string rezultat este folosit pentru a forma o lista de intructiuni folosind Map.
+
+-Functia isClass verifica folosind elem daca exista o clasa in program cu numele name. (Daca name reprezinta numele unei clase valide)
+
+-Functia parseLine este folosita pentru functii, pentru a parsa atributele unei functii. Caracterele : , ( ) si = sunt inlocuite cu spatii si se face splitBy dupa spatii. Astefel se obtine o lista cu atributele functiei
+
+-Functia validFunc va verifica daca o functie reprezentata prin lista de string uri este valida. Va trebui ca rezuktatul intors de functie sa fie valid, clasa functiei si parametrii acesteia sa fie valizi folosind isClass. checkRet verifica daca rezultatul (primul element) este valid .checkParam va verifica daca parametrii sun valizi . Se ia lista cu parametrii (drop 3 l) si se verifica folosind map daca sunt valizi.Daca in lista returnata de map exista si un singur False (un parametru invalid) atunci toata functia va fi invalida. Pentru checkClass se verfica asemanator al doilea element din lista (l !! 1).
+
+-Functia reorder va lua lista cu atributele unei functii si o va reordona astfel incat sa fie cel potrivit pentru functiile din classtate deci : nume (l!!2), tip intors (l!!0), parametrii (drop 3 l).
+
+-Functia insertFunc va insera o lista formata de reorder intr-o clasa (ClassInfo) data ca parametru folosind functia insertIntoClass si se formeaza un nou element ClassInfo folosind numele si parintele celui anterior.
+
+-Functia insertFuncInProg. Daca trebuie sa se insereze in global folosim insertFunc, altfel se va cauta in lista de  clase a programului folosind map, si daca se gaseste clasa cu numele corespunzator se va inlocui acea clasa cu cea returnata de insertFunc.Verificam daca functia este valida folosind validFunc si daca da , intoarcem good_prog (cel in care am facut inserarea) si daca nu se intoarce acelsi program (prog).
+
+-Functia interpret primeste o instructiune si un prorgam si o va aplica. Daca trebuie sa introducem in program o noua clasa vom forma new_class. Daca are 4 elemente si incepe cu class inseamna ca avem nevoie de mostenire.Formam o clasa noua cu initEmptyClass si daca parintele este valid,acesta va fi parintele, daca nu , parintele va fi global.Daca nu avem extends clasa va avea parintele global.Daca clasa este deja in program, nu facem nimic, altfel o inseram.
+
+Daca vrem o variabila noua, vom verifica ca tipul acesteia este valid (is class l!!2) si o inseram in classstate ul clasei global in caz afirmativ. Daca nu este vailid, programul ramane neschimbat.
+
+Mai ramane cazul in care introducem functii si vom apela functia insertFuncInProg
+
+
+-Functia getMaybe va obtine continutul dintr-un element (Just element)
+
+-Functia validCall va verifica daca este valid o expresie de tip FCall .Va primi ca argumente clasa in care se afla functia , numele functiei, programul si parametrii functiei. searched va fi o lista ce contine clasele cu numele clasei cautate. paramTypes va apela infer pe toate elementele din lista de parametrii si va obtine tipurile corespunzatoare ale acestora. found va fi o lista ce contine functia cu parametrii potriviti.Se cauta in searched (lista cu functii ce au numele egal cu func) si se verifica care din elemente are parametrii identici cu paramTypes. Astfel  avem in found exact functia cu numele si parametrii corespunzatori. Daca searched este [] vom cauta functia cu numele respectiv cu validCall in clasa parinte pana la global. Daca nu este nici in global atunci ne oprim si returnam []. Daca avem un element invalid in parametrii (Nothing) atuci returnam []. Daca nu avem o functie care face match exact pe parametrii ceruri vom cauta una recursiv folosindvaldCall in clasa parinte. Dupa aceste verificari vom avea functia ceruta si vom returna heaf found (found este o lista).
+
+-In functia infer, daca expresia este o variabila (Va a) vom cauta o variabila cu numele potrivit folosind filter si getVars si daca nu gasim nimic , returnam Nothing , altfel returnam tipul acesteia
+
+In caz ca expresia este de tip Fcall, daca clasa varaibilei var este Nothing, toate expresia va fi Nothing. searchedFunc va fi functia intoarsa de validCall. Va fi ori functia corecta, ori []. Daca este [] atunci returna Nothing. Tot ce a mai ramas este cazul in care totul a mers corect, toti parametrii sunt valizi, deci vom returna Just a unde a este rezultatul intors de functie (searchedFunc !! 1)
